@@ -1,0 +1,17 @@
+h1 {
+    text-align: center;
+}
+
+#bloco-textarea {
+    display: flex;
+    justify-content: space-between;
+}
+
+#input-area {
+    text-align: left;
+    margin: 0;
+}
+
+#output-area {
+    text-align: left;
+}
