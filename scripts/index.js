@@ -10,6 +10,7 @@ bt_traduzir.onclick = () => {
     let codigoMaquina = '';
     
     for (let linha of linhas) {
+        linha = linha.trim(); //Retira espaços em branco no início e no fim da instrução lida
         codigoMaquina += translator.traduzir(linha) + ' ';
     }
     output_area.textContent = codigoMaquina;

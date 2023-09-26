@@ -38,7 +38,7 @@ export default class Translator {
 
     codificarArgs(linhaDividida) {
         const qtdGrupos = linhaDividida.grupos.length - 1;
-        let grupo2, grupo3;
+        let grupo2, grupo3, grupo1;
 
         if (qtdGrupos > 1) {
             let regex = this.#instructionSet.regex;
@@ -46,44 +46,48 @@ export default class Translator {
             let regPairs = this.#instructionSet.regPairs;
             let conditions = this.#instructionSet.conditions;
 
+            grupo1 = linhaDividida.grupos[1];
             grupo2 = linhaDividida.grupos[2];
             if (qtdGrupos > 2) {
                 grupo3 = linhaDividida.grupos[3];
             }
 
             //Analisando os 4 formatos possíveis de instruções com base nas respectivas regex
-            if (linhaDividida.regex === regex[3]) {
-                // REGEX 3: Aplicar codificações para: registers, regPair
-                // CODIFICANDO REGISTRADORES
-                if (grupo2 in registers) {
-                    grupo2 = registers[grupo2]; //register: code
+            if (linhaDividida.regex === regex[3] || linhaDividida.regex === regex[4]) {
+                // REGEX 3 e 4: Aplicar codificações para: registers, regPair
+                // CODIFICANDO CONSTANTES
+                
+                if (grupo1 === "RST") {
+                    //Caso seja o argumento da instrução RST, ou seja, 1,2,3,...,7
+                    let zerosEsquerda = "";
+                    if (parseInt(grupo2,10) < 2) {
+                        zerosEsquerda = "00";
+                    } else if (parseInt(grupo2,10) < 4) {
+                        zerosEsquerda = "0";
+                    }
+                    grupo2 = zerosEsquerda + parseInt(grupo2,10).toString(2);
                 }
-                if (grupo3 in registers && qtdGrupos > 2) { //TESTAR!!!: retirar qtdGrupos > 2
-                    grupo3 = registers[grupo3]; //register: code
-                }
+                
 
-                //CODIFICANDO PARES DE REGISTRADORES
-                if (grupo2 in regPairs) {
-                    grupo2 = regPairs[grupo2]; //regPair: code
-                }
-            } else if (linhaDividida.regex === regex[2]) {
-                // REGEX 2: Aplicar codificações para: registradores, regPair
                 // CODIFICANDO REGISTRADORES
                 if (grupo2 in registers) {
                     grupo2 = registers[grupo2]; //register: code
+                }
+                if (grupo3 in registers && qtdGrupos > 2) {
+                    grupo3 = registers[grupo3]; //register: code
                 }
 
                 // CODIFICANDO PARES DE REGISTRADORES
                 if (grupo2 in regPairs) {
                     grupo2 = regPairs[grupo2]; //regPair: code
                 }
-            } else if (linhaDividida.regex === regex[1]) {
-                // REGEX 1: Aplicar codificações para: condições
+            } else if (linhaDividida.regex === regex[1] || linhaDividida.regex === regex[2]) {
+                // REGEX 1 e 2: Aplicar codificações para: condições
                 // CODIFICANDO CONDIÇÕES
                 if (grupo2 in conditions) {
                     grupo2 = conditions[grupo2]; //condition: code
                 }
-            }
+            } 
             // REGEX 0: não precisa ser tratada, porque não possui argumentos
 
             linhaDividida.grupos[2] = grupo2;
