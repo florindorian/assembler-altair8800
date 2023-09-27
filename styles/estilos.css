@@ -15,3 +15,7 @@ h1 {
 #output-area {
     text-align: left;
 }
+
+#img-github {
+    float: right;
+}

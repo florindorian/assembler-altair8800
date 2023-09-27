@@ -1,13 +1,17 @@
 export default class InstructionSet {
     #regex = [
-        // Instrução com 1 campo
-        /^([A-Z]{2,4})$/,
-        // Instrução com 2 campos, sendo que a inicial do primeiro campo é J, C ou R e o complemento é NZ|Z|NC|C|PO|PE|P|M
-        /^((?:J|C|R))((?:NZ|Z|NC|C|PO|PE|P|M)) ([0-9A-Z]{4})$/,
-        // Instrução com 2 campos genéricos
-        /^([A-Z]{2,4}) ([0-9A-Z]{1,})$/,
-        // Instrução com 3 campos, sendo que os dois últimos são separados por vírgula
-        /^([A-Z]{2,4}) ([0-9A-Z]{1,}),([0-9A-Z]{1,})$/
+        // Instrução com 1 parte
+        /^(?!(?:J|C|R)(?:NZ|Z|NC|C|PO|PE|P|M)$)([A-Z]{2,4})$/,
+        // Instrução com 1 parte, a qual começa com a letra R seguida de uma condição
+        /^(R)(NZ|Z|NC|C|PO|PE|P|M)$/,
+        // Instrução com 2 partes, com a letra C ou J seguida de uma condição na 1ª e um argumento constante ou label na 2ª 
+        /^(J|C)(NZ|Z|NC|C|PO|PE|P|M) (?:([0-9A-F]{4}|\w+))$/,
+        // Instrução com 2 partes, com JMP ou CALL na 1ª e um argumento constante ou label na 2ª
+        /^(JMP|CALL) ([0-9A-F]{4}|\w+)$/,
+        // Instrução com 2 partes genéricas
+        /^([A-Z]{2,4}) ([0-9A-F]+)$/, //TODO: colocar limite {1,4}
+        // Instrução com 3 partes, sendo que as duas últimas são separadas por vírgula
+        /^([A-Z]{2,4}) ([0-9A-F]+),([0-9A-F]+)$/
     ];
 
     #mnemonics = {
@@ -19,8 +23,8 @@ export default class InstructionSet {
         'STA': ['lb hb', '00110010 lb hb'],
         'LHLD': ['lb hb', '00101010 lb hb'],
         'SHLD': ['lb hb', '00100010 lb hb'],
-        'LDAX': ['RP', '00RP1010 RP'], // Considerar a obs *1 e TODO: implementação
-        'STAX': ['RP', '00RP0010 RP'], // Considerar a obs *1 e TODO: implementação
+        'LDAX': ['RP', '00RP1010'], // Considerar a obs *1 e TODO: implementação
+        'STAX': ['RP', '00RP0010'], // Considerar a obs *1 e TODO: implementação
         'XCHG': ['', '11101011'],
         'ADD': ['SSS', '10000SSS'],
         'ADI': ['db', '11000110 db'],
@@ -39,11 +43,11 @@ export default class InstructionSet {
         'ANA': ['SSS', '10100SSS'],
         'ANI': ['db', '11100110 db'],
         'ORA': ['SSS', '10110SSS'],
-        'ORI': ['db', '11110110 db'], //Em http://dunfield.classiccmp.org//r/8080.txt está errado, aqui está corrigido
+        'ORI': ['db', '11110110 db'], // Em http://dunfield.classiccmp.org//r/8080.txt está errado, aqui está corrigido
         'XRA': ['SSS', '10101SSS'],
         'XRI': ['db', '11101110 db'],
         'CMP': ['SSS', '10111SSS'],
-        'CPI': ['db', '11111110 db'], //Em http://dunfield.classiccmp.org//r/8080.txt está errado, aqui está corrigido
+        'CPI': ['db', '11111110 db'], // Em http://dunfield.classiccmp.org//r/8080.txt está errado, aqui está corrigido
         'RLC': ['', '00000111'],
         'RRC': ['', '00001111'],
         'RAL': ['', '00010111'],
@@ -56,11 +60,11 @@ export default class InstructionSet {
         'CALL': ['lb hb', '11001101 lb hb'],
         'C': ['ccc,lb hb', '11ccc100 lb hb'],
         'RET': ['', '11001001'],
-        'R': ['ccc', '11CCC000'], //OBS!!! Provavelmente a 2ª regex não corresponde a essa instrução, devido não possuir um argumento do tipo ([0-9A-Z]{4}); TODO: Corrigir a regex ou criar uma nova
+        'R': ['ccc', '11ccc000'],
         'RST': ['nnn', '11nnn111'],
         'PCHL': ['', '11101001'],
-        'PUSH': ['RP', '11RP0101 RP'], // Considerar a obs *2 e TODO: implementação
-        'POP': ['RP', '11RP0001 RP'], // Considerar a obs *2 e TODO: implementação
+        'PUSH': ['RP', '11RP0101'], // Considerar a obs *2 e TODO: implementação
+        'POP': ['RP', '11RP0001'], // Considerar a obs *2 e TODO: implementação
         'XTHL': ['', '11100011'],
         'SPHL': ['', '11111001'],
         'IN': ['pa', '11011011 pa'],
