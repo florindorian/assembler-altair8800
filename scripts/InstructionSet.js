@@ -4,10 +4,12 @@ export default class InstructionSet {
         /^(?!(?:J|C|R)(?:NZ|Z|NC|C|PO|PE|P|M)$)([A-Z]{2,4})$/,
         // Instrução com 1 parte, a qual começa com a letra R seguida de uma condição
         /^(R)(NZ|Z|NC|C|PO|PE|P|M)$/,
-        // Instrução com 2 partes, com J ou C seguido de uma condição na 1ª e um argumento constante na 2ª
-        /^(J|C)(NZ|Z|NC|C|PO|PE|P|M) ([0-9A-F]{4})$/,
+        // Instrução com 2 partes, com a letra C ou J seguida de uma condição na 1ª e um argumento constante ou label na 2ª 
+        /^(J|C)(NZ|Z|NC|C|PO|PE|P|M) (?:([0-9A-F]{4}|\w+))$/,
+        // Instrução com 2 partes, com JMP ou CALL na 1ª e um argumento constante ou label na 2ª
+        /^(JMP|CALL) ([0-9A-F]{4}|\w+)$/,
         // Instrução com 2 partes genéricas
-        /^([A-Z]{2,4}) ([0-9A-F]+)$/,
+        /^([A-Z]{2,4}) ([0-9A-F]+)$/, //TODO: colocar limite {1,4}
         // Instrução com 3 partes, sendo que as duas últimas são separadas por vírgula
         /^([A-Z]{2,4}) ([0-9A-F]+),([0-9A-F]+)$/
     ];

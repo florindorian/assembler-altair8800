@@ -1,0 +1,54 @@
+====================================================================================================
+[IF-ELSE]
+## DESCRIÇÃO: Se o conteúdo de [0080] for 0, o número 1 é carregado em [0083]. Caso contrário, o número 2 é carregado em [0083].
+
+## CARREGAR NA MEMÓRIA:
+	[0080] = (0 ou 1)
+	[0081] = 1
+	[0082] = 2
+	[0083] -> Resultado (1, caso [0080] == 0, ou 2, caso [0080] == 1)
+
+## PROGRAMA:
+
+inicio:
+	LDA 0080
+if: CPI 00
+	JNZ else
+	LDA 0081
+	STA 0083
+	JMP end
+else:
+	LDA 0082
+	STA 0083
+end: HLT
+
+## SAÍDA ESPERADA: 3A 80 00 FE 00 C2 0F 00 3A 81 00 32 83 00 C3 15 00 3A 82 00 32 83 00 76 
+
+====================================================================================================
+[IF-ELSE 2: testando a igualdade de dois valores]
+## DESCRIÇÃO: Se os valores contidos em [0080] e [0081] forem iguais, [0084] receberá o valor 1, caso contrário receberá o valor 0.
+
+## CARREGAR NA MEMÓRIA:
+[0080] = 5
+[0081] = 5
+[0082] = 1
+[0083] = 0
+[0084] -> Resultado da igualdade (1, caso sejam iguais, ou 0, caso não sejam)
+
+## PROGRAMA: 
+
+inicio:
+	LDA 0080
+	MOV B,A
+	LDA 0081
+if: CMP B
+	JNZ else
+	LDA 0082
+	JMP end
+else:
+	LDA 0083
+end:
+	STA 0084
+	HLT
+	
+## SAÍDA ESPERADA: 3A 80 00 47 3A 81 00 B8 C2 11 00 3A 82 00 C3 14 00 3A 83 00 32 84 00 76
