@@ -1,0 +1,18 @@
+====================================================================================================
+[LAÇO WHILE: preenchendo um array de forma incremental]
+## DESCRIÇÃO: Carrega-se no registrador A (acumulador) o valor 01 (hexadecimal). Em seguida, o seu valor é incrementado em 1 unidade enquanto ele for menor que 06 (hexadecimal), ou seja, gera-se a sequência 01,02,03,04,05. A cada iteração do loop while, um valor é armazenado no endereço de memória guardado pelo par de registradores BC, que começa em 0080 (hexadecimal) e é incrementado em 1 unidade até 0084 (hexadecimal).
+
+## PROGRAMA: 
+
+MVI A,01
+LXI BC,0080
+while: CPI 06
+	JNC endw
+	STAX BC
+	INR A
+	INX BC
+	JMP while
+endw:
+HLT
+	
+## SAÍDA ESPERADA: 3E 01 01 80 00 FE 06 D2 10 00 02 3C 03 C3 05 00 76 

@@ -9,18 +9,38 @@
 </head>
 
 <body>
-    <a id="img-github" target="_blank" href="https://github.com/florindorian/assembler-altair8800">
-        <img src="images/github1.png" alt="My GitHub Repository" width="50" height="50">
-    </a>
-    <h1>
-        Assembler para o <a target="_blank" href="https://wixette.github.io/8800-simulator/">Altair 8800 Simulator</a>
-    </h1>
-    <div id="bloco-textarea">
-        <textarea id="input-area" cols="90" rows="30"></textarea>
-        <textarea readonly id="output-area" cols="90" rows="30"></textarea>
+    <div id="content">
+        <div id="div-github">
+            <a id="link-github" target="_blank" href="https://github.com/florindorian/assembler-altair8800">
+                <img id="img-github" src="images/github1.png" alt="My GitHub Repository" width="50" height="50">
+            </a>
+        </div>
+
+        <h1>
+            Assembler para o <a target="_blank" href="https://wixette.github.io/8800-simulator/">Altair 8800 Simulator</a>
+        </h1>
+        
+        <div id="bloco-textarea">
+            <textarea id="input-area" cols="90" rows="30"></textarea>
+            <textarea readonly id="output-area" cols="90" rows="30"></textarea>
+        </div>
+        <br>
+        <div id="div-buttons">
+            <button id="bt-traduzir">Translate</button>
+            <button id="bt-cleanAll">Clean all</button>
+            <button id="bt-copy">Copy</button>
+        </div>
     </div>
-    <br>
-    <button id="bt-traduzir">Traduzir</button>
+
+    <footer>
+        <div class="container">
+            <ul>
+                <li><a class="link-footer" target="_blank" href="http://dunfield.classiccmp.org//r/8080.txt">Instruction Set</a></li>
+                <li><a class="link-footer" target="_blank" href="https://ubuntourist.codeberg.page/Altair-8800/">Altair 8800 Operator’s Manual</a></li>
+            </ul>
+        </div>
+    </footer>
+    
     <script src="scripts/index.js" type="module"></script>
 </body>
 

@@ -1,11 +1,20 @@
+====================================================================================================
 [EXEMPLO: Incremento do registrador A]
 Descrição: Quando a máquina é ligada, o registrador A aponta para o endereço 0000. Logo, o programa fará ele apontar para o endereço 0001 e o seu valor será armazenado no endereço 0010.
+
+## PROGRAMA:
+
 INR A
 STA 0010
 HLT
 
+## SAÍDA ESPERADA: 3C 32 10 00 76
+
+====================================================================================================
 [EXEMPLO: Soma de dois números]
 Descrição: Armazenar dois números nos endereços 0080 e 0081. Ao rodar o programa, a soma dois dois operandos será armazenada no endereço 0082.
+
+## PROGRAMA:
 
 LDA 0080
 MOV B,A
@@ -13,5 +22,7 @@ LDA 0081
 ADD B
 STA 0082
 HLT
+
+## SAÍDA ESPERADA: 3A 80 00 47 3A 81 00 80 32 82 00 76
 
 

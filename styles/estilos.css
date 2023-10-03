@@ -16,6 +16,66 @@ h1 {
     text-align: left;
 }
 
-#img-github {
+#content {
+    min-height: calc(100vh - 100px);
+    margin: 0 10px;
+}
+
+#bt-copy {
     float: right;
 }
+
+/*======================================================================*/
+/*Parte do footer*/
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+footer {
+    background-color: #333333;
+    color: white;
+}
+
+.container {
+    max-width: 1200px;
+    padding: 10px;
+}
+
+a.link-footer {
+    color: white;
+    text-decoration: none;
+}
+
+a.link-footer:hover {
+    color: gray;
+}
+
+/*======================================================================*/
+/*Logo do GitHub*/
+#link-github {
+    width: 50px;
+    height: 50px;
+}
+
+#img-github {
+    width: 50px;
+    height: 50px;
+
+}
+
+#img-github:hover {
+    width: 52px;
+    height: 52px;
+    transform: scale(1.1);
+}
+
+#div-github {
+    width: 55px;
+    height: 55px;
+    float: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/*======================================================================*/
