@@ -53,8 +53,12 @@ export default class Translator {
         
         // Loop para codificar as labels restantes no código pelos respectivos endereços que referenciam
         let references = this.#memoryMonitor.references;
+        let regexRef;
+        let s;
         for (let ref in references) {
-            this.#machineCode = this.#machineCode.replaceAll(ref, references[ref])
+            s = "\\b" + ref + "\\b";
+            regexRef = new RegExp(s, "g");
+            this.#machineCode = this.#machineCode.replaceAll(regexRef, references[ref])
         }
         console.log(this.#memoryMonitor.references);
         return this.#machineCode;
