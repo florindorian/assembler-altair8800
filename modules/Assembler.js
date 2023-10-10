@@ -1,70 +1,91 @@
 import InstructionSet from "./InstructionSet.js";
 import MemoryMonitor from "./MemoryMonitor.js";
 
-export default class Translator {
+export default class Assembler {
     #instructionSet
     #memoryMonitor
-    #machineCode
+    #machineCodeHex
+    #machineCodeBin
 
     constructor() {
         this.#instructionSet = new InstructionSet();
         this.#memoryMonitor = new MemoryMonitor();
-        this.#machineCode = "";
+        this.#machineCodeHex = "";
+        this.#machineCodeBin = "";
     }
 
-    traduzir(linhas) {
-        this.#machineCode = "";
+    assemble(linhas) {
+        this.#machineCodeBin = "";
+        let machineCodeHex = this.translateToHex(linhas);
+        let bytes = machineCodeHex.trim().split(" ");
 
-        // Loop para fazer a primeira etapa de tradução, a qual só não faz a codificação de labels
-        for (let linha of linhas) {
-            let instrucao, label;
+        // Converte cada byte de hexadecimal para binário e acumula em #machineCodeBin
+        for (let byte of bytes) {
+            let decimal = parseInt(byte, 16);
+            let binario = decimal.toString(2);
 
-            // Separa a label da instrução
-            let label_inst = this.separarLabel(linha);
-            if (label_inst.length > 1) {
-                //Caso exista tanto a label quanto a instrução
-                instrucao = label_inst[1];
-                label = label_inst[0];
-            } else {
-                //Caso não haja label
-                instrucao = label_inst[0];
-                label = "";
+            // Ajusta a string que representa o byte em dígitos binários para o formato BBBBBBBB, onde B é um dígito binário.
+            // Ou seja, complementa com zeros à esquerda se for necessário
+            for (let indice = 7; indice >= 1; indice--) {
+                if (decimal < 2 ** indice) {
+                    binario = "0" + binario;
+                } else {
+                    break;
+                }
             }
-            instrucao = instrucao.trim(); //Retira espaços em branco no início e no fim da instrução
-            label = label.trim(); //Retira espaços em branco no início e no fim da label
+            this.#machineCodeBin += binario + " ";
+        }
+        this.#machineCodeBin = this.#machineCodeBin.trim();
+        return this.#machineCodeBin;
+    }
+
+    translateToHex(linhas) {
+        this.#machineCodeHex = "";
+        let label, instrucao;
+
+        // 1ª etapa de tradução, a qual só não faz a codificação de labels (mais cria um registro delas)
+        for (let linha of linhas) {
+            // Separa a label da instrução
+            [label, instrucao] = this.#separarLabelInst(linha);
 
             // Se houver uma label, o memoryMonitor irá registrá-la.
             if (label !== "") {
-                this.#memoryMonitor.linkarLabel(label);
+                this.#memoryMonitor.registrarLabel(label);
             }
 
             // Se a instrução não for vazia:
             if (instrucao !== "") {
                 // Etapas fundamentais para a tradução:
-                let linhaDividida = this.agrupar(instrucao);
-                let gruposCodificados = this.codificarArgs(linhaDividida);
-                let stringBase = this.interpolar(gruposCodificados);
-                let linhaHex = this.converterParaHex(stringBase);
-                this.#machineCode += linhaHex + " ";
-
-                this.#memoryMonitor.observar(linhaHex);
+                let linhaDividida = this.#agrupar(instrucao);
+                let gruposCodificados = this.#codificarArgs(linhaDividida);
+                let stringBase = this.#interpolar(gruposCodificados);
+                let linhaHex = this.#converterParaHex(stringBase);
+                this.#machineCodeHex += linhaHex + " ";
+                // Calcular o próximo endereço vazio
+                this.#memoryMonitor.atualizarNVA(linhaHex);
             }
         }
         
-        // Loop para codificar as labels restantes no código pelos respectivos endereços que referenciam
-        let references = this.#memoryMonitor.references;
-        let regexRef;
-        let s;
-        for (let ref in references) {
-            s = "\\b" + ref + "\\b";
-            regexRef = new RegExp(s, "g");
-            this.#machineCode = this.#machineCode.replaceAll(regexRef, references[ref])
-        }
-        console.log(this.#memoryMonitor.references);
-        return this.#machineCode;
+        // 2ª etapa da tradução, a qual codifica as labels restantes no código com os respectivos endereços que referenciam
+        this.#codificarLabels();
+
+        this.#machineCodeHex = this.#machineCodeHex.trim();
+        return this.#machineCodeHex;
     }
 
-    agrupar(linha) {
+    #separarLabelInst(linha) {
+        let label_inst = linha.split(":");
+        if (label_inst.length < 2) {
+            // Caso não haja label (linha sem ':')
+            label_inst.unshift("");
+        }
+        label_inst[0] = label_inst[0].trim(); // Retira espaços em branco no início e no fim da label
+        label_inst[1] = label_inst[1].trim(); // Retira espaços em branco no início e no fim da instrução
+
+        return label_inst;
+    }
+
+    #agrupar(linha) {
         //Estrutura que armazena o formato da instrução contida em "linha" e seus campos
         let linhaDividida = { "regex": "", "grupos": null };
 
@@ -85,7 +106,7 @@ export default class Translator {
         }
     }
 
-    codificarArgs(linhaDividida) {
+    #codificarArgs(linhaDividida) {
         const qtdGrupos = linhaDividida.grupos.length - 1;
         let grupo2, grupo3, grupo1;
 
@@ -147,7 +168,7 @@ export default class Translator {
         return linhaDividida;
     }
 
-    interpolar(gruposCodificados) {
+    #interpolar(gruposCodificados) {
         let str = '', grupo;
         let mnemonics = this.#instructionSet.mnemonics;
 
@@ -175,19 +196,26 @@ export default class Translator {
         return str;
     }
 
-    converterParaHex(stringBase) {
+    #converterParaHex(stringBase) {
         let binario = stringBase.substring(0, 8);
-        //parseInt(binario, 2) converte "binario" para decimal, e toString(16) o converte para hexadecimal em UpperCase
+        //parseInt(binario, 2) converte "binario" para decimal, e toString(16) o converte para hexadecimal, e é colocado em UpperCase em seguida
         let hexadecimal = parseInt(binario, 2).toString(16).toUpperCase();
         if (parseInt(binario, 2) < 16) {
-            //Números menores que até quinze podem ser representados com um único algarismo hexadecimal, o que não é desejável
+            //Números até quinze podem ser representados com um único algarismo hexadecimal, o que não é desejável
             hexadecimal = '0' + hexadecimal;
         }
         return stringBase.replace(binario, hexadecimal);
     }
 
-    separarLabel(linha) {
-        let label_inst = linha.split(":");
-        return label_inst;
+    #codificarLabels() {
+        let references = this.#memoryMonitor.references;
+        let regexRef;
+        let s;
+        for (let ref in references) {
+            s = "\\b" + ref + "\\b";
+            regexRef = new RegExp(s, "g");
+            this.#machineCodeHex = this.#machineCodeHex.replaceAll(regexRef, references[ref])
+        }
     }
+    
 }

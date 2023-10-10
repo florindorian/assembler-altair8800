@@ -52,3 +52,36 @@ end:
 	HLT
 	
 ## SAÍDA ESPERADA: 3A 80 00 47 3A 81 00 B8 C2 11 00 3A 82 00 C3 14 00 3A 83 00 32 84 00 76
+
+====================================================================================================
+[COMPARANDO DOIS VALORES: chamando sub-rotinas condicionalmente]
+## DESCRIÇÃO: 
+	Este programa permite testar se o valor do registrador A é:
+		* menor; ou
+		* maior ou igual
+	em relação ao valor imediato "06" passado na segunda linha (CPI 06).
+
+	Se A < 06 (que é o que ocorre), então "01" é armazenado no endereço "0080".
+	Caso contrário, "02" é armazenado no endereço "0080".
+
+	Logo, o símbolo que representa a primeira condição como verdadeira é "M", e o símbolo que representa a segunda condição (a negação da primeira) como verdadeira é "P", como sugerem as linhas (CM menor) e (CP maiorOuIgual), respectivamente.
+
+## PROGRAMA: 
+
+MVI A,05
+CPI 06
+CM menor
+CP maiorOuIgual
+HLT
+
+menor:
+	MVI A,01
+	STA 0080
+	RET
+
+maiorOuIgual:
+	MVI A,02
+	STA 0080
+	RET
+	
+## SAÍDA ESPERADA: 3E 05 FE 06 FC 0B 00 F4 11 00 76 3E 01 32 80 00 C9 3E 02 32 80 00 C9 

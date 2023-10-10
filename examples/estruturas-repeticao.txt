@@ -7,7 +7,7 @@
 MVI A,01
 LXI BC,0080
 while: CPI 06
-	JNC endw
+	JP endw
 	STAX BC
 	INR A
 	INX BC
