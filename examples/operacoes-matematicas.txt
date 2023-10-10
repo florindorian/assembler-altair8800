@@ -1,0 +1,40 @@
+====================================================================================================
+[MULTIPLICAÇÃO: Multiplicando A e B e armazenando o resultado em A]
+## DESCRIÇÃO: 
+    Esta sub-rotina precisa obrigatoriamente que os valores a serem multiplicados estejam nos registradores A e B.
+    Após o retorno da chamada da sub-rotina "multip", o resultado da multiplicação estará no registrador A.
+
+    * Para alterar o valor passado a A: alterar a primeira linha (MVI A,02), substituindo "02" por outros valor (em hexadecimal e com 2 algarismos).
+    * Para alterar o valor passado a B: alterar a segunda linha (MVI B,05), substituindo "05" por outros valor (em hexadecimal e com 2 algarismos).
+
+    Para esses dois valores, o resultado esperado para a multiplicação é "0A" (10 em decimal).
+
+## PROGRAMA: 
+
+MVI A,02
+MVI B,05
+CALL multip
+HLT
+
+multip:
+	PUSH BC
+	PUSH DE
+	MVI C,00
+	MOV E,A
+	MVI A,00
+	whileM:
+		MOV D,A
+			MOV A,C
+			CMP B
+			JP endM
+		MOV A,D
+		ADD E
+		INR C
+		JMP whileM
+	endM: 
+	MOV A,D
+	POP DE
+	POP BC
+	RET
+	
+## SAÍDA ESPERADA: 3E 02 06 05 CD 08 00 76 C5 D5 0E 00 5F 3E 00 57 79 B8 F2 1B 00 7A 83 0C C3 0F 00 7A D1 C1 C9 

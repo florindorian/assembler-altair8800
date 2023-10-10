@@ -1,0 +1,52 @@
+====================================================================================================
+[FATORIAL ITERATIVO]
+## DESCRIÇÃO: 
+    Escolha um número natural em hexadecimal e com 2 algarismos.
+    Em seguida, coloque-o na primeira linha do programa (MVI A,05), substituindo "05" por ele.
+    Após a execução do programa, o resultado do fatorial estará armazenado no registrador B.
+
+    Para o valor "05", o resultado esperado para o fatorial é "78" (120 em decimal).
+    Para os valores "00" e "01", o resultado é "01".
+
+## PROGRAMA: 
+
+MVI A,05
+MOV C,A
+MVI B,01
+
+while1:
+	MOV A,C
+	CPI 02
+	JM end1
+	
+	CALL multip
+	MOV B,A
+	DCR C
+	JMP while1
+end1:
+HLT
+
+
+multip:
+	PUSH BC
+	PUSH DE
+	MVI C,00
+	MOV E,A
+	MVI A,00
+	whileM:
+		MOV D,A
+			MOV A,C
+			CMP B
+			JP endM
+		MOV A,D
+		ADD E
+		INR C
+		JMP whileM
+	endM: 
+	MOV A,D
+	POP DE
+	POP BC
+	RET
+	
+## SAÍDA ESPERADA: 
+    3E 05 4F 06 01 79 FE 02 FA 13 00 CD 14 00 47 0D C3 05 00 76 C5 D5 0E 00 5F 3E 00 57 79 B8 F2 27 00 7A 83 0C C3 1B 00 7A D1 C1 C9
